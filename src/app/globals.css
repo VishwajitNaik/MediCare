@@ -1,8 +1,42 @@
 @import "tailwindcss";
 
 :root {
+  /* Light theme colors */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+  
+  /* Medical Green Theme Colors */
+  --medical-primary: #10b981;      /* Emerald-500 */
+  --medical-dark: #059669;         /* Emerald-600 */
+  --medical-light: #d1fae5;        /* Emerald-100 */
+  --medical-border: #d1fae5;       /* Light border */
+  --medical-bg: #ecfdf5;          /* Very light green */
+  --medical-success: #22c55e;      /* Green-500 */
+  --medical-warning: #f59e0b;      /* Yellow-500 */
+  --medical-danger: #ef4444;       /* Red-500 */
+  --medical-info: #3b82f6;         /* Blue-500 */
+  
+  /* Hospital Standard Colors */
+  --hospital-blue: #1e88e5;        /* Trust, Professionalism */
+  --hospital-blue-dark: #1565c0;   /* Darker blue for hover */
+  --hospital-blue-light: #5dcc41;  /* Light background */
+  --hospital-green: #43a047;       /* Health, Growth */
+  --hospital-green-dark: #2e7d32;  /* Darker green */
+  --hospital-green-light: #e8f5e9; /* Light green background */
+  --hospital-success: #4caf50;     /* Success messages */
+  --hospital-success-light: #e8f5e9;
+  --hospital-success-dark: #388e3c;
+  --hospital-warning: #ff9800;     /* Warning, Caution */
+  --hospital-warning-light: #fff3e0;
+  --hospital-warning-dark: #f57c00;
+  --hospital-danger: #f44336;      /* Danger, Error */
+  --hospital-danger-light: #ffebee;
+  --hospital-danger-dark: #d32f2f;
+  --hospital-gray: #757575;        /* Secondary text */
+  --hospital-gray-light: #f5f5f5;  /* Light backgrounds */
+  --hospital-gray-dark: #201f1f;   /* Primary text */
+  --hospital-white: #ffffff;
+  --hospital-off-white: #fafafa;
 }
 
 @theme inline {
@@ -10,17 +44,782 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Medical Theme Colors */
+  --color-medical-primary: var(--medical-primary);
+  --color-medical-dark: var(--medical-dark);
+  --color-medical-light: var(--medical-light);
+  --color-medical-border: var(--medical-border);
+  --color-medical-bg: var(--medical-bg);
+  --color-medical-success: var(--medical-success);
+  --color-medical-warning: var(--medical-warning);
+  --color-medical-danger: var(--medical-danger);
+  --color-medical-info: var(--medical-info);
+  
+  /* Hospital Theme Colors */
+  --color-hospital-blue: var(--hospital-blue);
+  --color-hospital-blue-dark: var(--hospital-blue-dark);
+  --color-hospital-blue-light: var(--hospital-blue-light);
+  --color-hospital-green: var(--hospital-green);
+  --color-hospital-green-dark: var(--hospital-green-dark);
+  --color-hospital-green-light: var(--hospital-green-light);
+  --color-hospital-success: var(--hospital-success);
+  --color-hospital-success-light: var(--hospital-success-light);
+  --color-hospital-success-dark: var(--hospital-success-dark);
+  --color-hospital-warning: var(--hospital-warning);
+  --color-hospital-warning-light: var(--hospital-warning-light);
+  --color-hospital-warning-dark: var(--hospital-warning-dark);
+  --color-hospital-danger: var(--hospital-danger);
+  --color-hospital-danger-light: var(--hospital-danger-light);
+  --color-hospital-danger-dark: var(--hospital-danger-dark);
+  --color-hospital-gray: var(--hospital-gray);
+  --color-hospital-gray-light: var(--hospital-gray-light);
+  --color-hospital-gray-dark: var(--hospital-gray-dark);
+  --color-hospital-white: var(--hospital-white);
+  --color-hospital-off-white: var(--hospital-off-white);
+  
+  /* Animation Keyframes */
+  --animate-fadeIn: fadeIn 0.6s ease-out;
+  --animate-slideInLeft: slideInLeft 0.5s ease-out;
+  --animate-slideInRight: slideInRight 0.5s ease-out;
+  --animate-fadeInUp: fadeInUp 0.6s ease-out;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce: bounce 3s infinite;
+  --animate-progress-bar: progressBar 2s linear forwards;
+  --animate-shake: shake 0.5s ease-in-out;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-newItem: newItemPulse 2s infinite;
+  --animate-pulse-medical: pulse-medical 2s infinite;
+  --animate-pulse-hospital: pulse-hospital 2s infinite;
 }
 
+/* Dark theme adjustments */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --medical-bg: #0f172a;         /* Slate-900 */
+    --medical-light: #1e293b;      /* Slate-800 */
+    --medical-border: #334155;     /* Slate-700 */
+    --hospital-blue-light: #12ca3a; /* Darker blue background */
+    --hospital-green-light: #20b429; /* Darker green background */
+    --hospital-gray-light: #212121;  /* Darker gray background */
+    --hospital-gray-dark: #555555;   /* Lighter text in dark mode */
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes newItemPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulse-medical {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes pulse-hospital {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(30, 136, 229, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(30, 136, 229, 0);
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Animation Classes */
+.animate-fadeIn { animation: fadeIn 0.6s ease-out; }
+.animate-slideInLeft { animation: slideInLeft 0.5s ease-out; }
+.animate-slideInRight { animation: slideInRight 0.5s ease-out; }
+.animate-fadeInUp { animation: fadeInUp 0.6s ease-out; }
+.animate-progress-bar { animation: progressBar 2s linear forwards; }
+.animate-shake { animation: shake 0.5s ease-in-out; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-newItem { animation: newItemPulse 2s infinite; }
+.animate-pulse-medical { animation: pulse-medical 2s infinite; }
+.animate-pulse-hospital { animation: pulse-hospital 2s infinite; }
+
+/* Animation delays */
+.delay-500 { animation-delay: 0.5s; }
+.delay-1000 { animation-delay: 1s; }
+.delay-1500 { animation-delay: 1.5s; }
+
+/* ===== MEDICAL THEME UTILITIES ===== */
+.bg-medical-primary { background-color: var(--medical-primary); }
+.bg-medical-dark { background-color: var(--medical-dark); }
+.bg-medical-light { background-color: var(--medical-light); }
+.bg-medical-bg { background-color: var(--medical-bg); }
+.bg-medical-success { background-color: var(--medical-success); }
+.bg-medical-warning { background-color: var(--medical-warning); }
+.bg-medical-danger { background-color: var(--medical-danger); }
+.bg-medical-info { background-color: var(--medical-info); }
+
+.text-medical-primary { color: var(--medical-primary); }
+.text-medical-dark { color: var(--medical-dark); }
+.text-medical-success { color: var(--medical-success); }
+.text-medical-warning { color: var(--medical-warning); }
+.text-medical-danger { color: var(--medical-danger); }
+.text-medical-info { color: var(--medical-info); }
+
+.border-medical-border { border-color: var(--medical-border); }
+.border-medical-primary { border-color: var(--medical-primary); }
+
+/* ===== HOSPITAL THEME UTILITIES ===== */
+/* Background Colors */
+.bg-hospital-blue { background-color: var(--hospital-blue); }
+.bg-hospital-blue-dark { background-color: var(--hospital-blue-dark); }
+.bg-hospital-blue-light { background-color: var(--hospital-blue-light); }
+.bg-hospital-green { background-color: var(--hospital-green); }
+.bg-hospital-green-dark { background-color: var(--hospital-green-dark); }
+.bg-hospital-green-light { background-color: var(--hospital-green-light); }
+.bg-hospital-success { background-color: var(--hospital-success); }
+.bg-hospital-success-light { background-color: var(--hospital-success-light); }
+.bg-hospital-success-dark { background-color: var(--hospital-success-dark); }
+.bg-hospital-warning { background-color: var(--hospital-warning); }
+.bg-hospital-warning-light { background-color: var(--hospital-warning-light); }
+.bg-hospital-warning-dark { background-color: var(--hospital-warning-dark); }
+.bg-hospital-danger { background-color: var(--hospital-danger); }
+.bg-hospital-danger-light { background-color: var(--hospital-danger-light); }
+.bg-hospital-danger-dark { background-color: var(--hospital-danger-dark); }
+.bg-hospital-gray { background-color: var(--hospital-gray); }
+.bg-hospital-gray-light { background-color: var(--hospital-gray-light); }
+.bg-hospital-gray-dark { background-color: var(--hospital-gray-dark); }
+.bg-hospital-white { background-color: var(--hospital-white); }
+.bg-hospital-off-white { background-color: var(--hospital-off-white); }
+
+/* Text Colors */
+.text-hospital-blue { color: var(--hospital-blue); }
+.text-hospital-blue-dark { color: var(--hospital-blue-dark); }
+.text-hospital-green { color: var(--hospital-green); }
+.text-hospital-green-dark { color: var(--hospital-green-dark); }
+.text-hospital-success { color: var(--hospital-success); }
+.text-hospital-success-dark { color: var(--hospital-success-dark); }
+.text-hospital-warning { color: var(--hospital-warning); }
+.text-hospital-warning-dark { color: var(--hospital-warning-dark); }
+.text-hospital-danger { color: var(--hospital-danger); }
+.text-hospital-danger-dark { color: var(--hospital-danger-dark); }
+.text-hospital-gray { color: var(--hospital-gray); }
+.text-hospital-gray-dark { color: var(--hospital-gray-dark); }
+
+/* Border Colors */
+.border-hospital-blue { border-color: var(--hospital-blue); }
+.border-hospital-blue-light { border-color: var(--hospital-blue-light); }
+.border-hospital-green { border-color: var(--hospital-green); }
+.border-hospital-success { border-color: var(--hospital-success); }
+.border-hospital-warning { border-color: var(--hospital-warning); }
+.border-hospital-danger { border-color: var(--hospital-danger); }
+
+/* ===== GRADIENTS ===== */
+/* Medical Gradients */
+.bg-gradient-medical {
+  background: linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-dark) 100%);
+}
+
+.bg-gradient-medical-light {
+  background: linear-gradient(135deg, var(--medical-bg) 0%, var(--background) 100%);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, var(--medical-success) 0%, #16a34a 100%);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, var(--medical-warning) 0%, #d97706 100%);
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(135deg, var(--medical-danger) 0%, #dc2626 100%);
+}
+
+/* Hospital Gradients */
+.bg-gradient-hospital {
+  background: linear-gradient(135deg, var(--hospital-blue) 0%, var(--hospital-green) 100%);
+}
+
+.bg-gradient-hospital-light {
+  background: linear-gradient(135deg, var(--hospital-blue-light) 0%, var(--hospital-green-light) 100%);
+}
+
+.bg-gradient-hospital-blue {
+  background: linear-gradient(135deg, var(--hospital-blue) 0%, var(--hospital-blue-dark) 100%);
+}
+
+.bg-gradient-hospital-green {
+  background: linear-gradient(135deg, var(--hospital-green) 0%, var(--hospital-green-dark) 100%);
+}
+
+.bg-gradient-hospital-success {
+  background: linear-gradient(135deg, var(--hospital-success) 0%, var(--hospital-success-dark) 100%);
+}
+
+.bg-gradient-hospital-warning {
+  background: linear-gradient(135deg, var(--hospital-warning) 0%, var(--hospital-warning-dark) 100%);
+}
+
+.bg-gradient-hospital-danger {
+  background: linear-gradient(135deg, var(--hospital-danger) 0%, var(--hospital-danger-dark) 100%);
+}
+
+/* Text Gradients */
+.gradient-text {
+  background: linear-gradient(45deg, var(--medical-primary), var(--medical-info));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-medical {
+  background: linear-gradient(45deg, var(--medical-primary), var(--medical-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-hospital {
+  background: linear-gradient(45deg, var(--hospital-blue), var(--hospital-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== COMPONENT STYLES ===== */
+/* Medical Components */
+.btn-medical {
+  @apply px-6 py-3 bg-medical-primary hover:bg-medical-dark text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200;
+}
+
+.btn-medical-outline {
+  @apply px-6 py-3 bg-white border border-medical-primary text-medical-primary hover:bg-medical-light font-semibold rounded-xl transition-all duration-200;
+}
+
+.card-medical {
+  @apply bg-white rounded-2xl shadow-lg border border-medical-border p-6;
+}
+
+/* Hospital Components */
+.btn-hospital {
+  @apply px-6 py-3 bg-hospital-blue hover:bg-hospital-blue-dark text-hospital-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200;
+}
+
+.btn-hospital-success {
+  @apply px-6 py-3 bg-hospital-success hover:bg-hospital-success-dark text-hospital-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200;
+}
+
+.btn-hospital-warning {
+  @apply px-6 py-3 bg-hospital-warning hover:bg-hospital-warning-dark text-hospital-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200;
+}
+
+.btn-hospital-danger {
+  @apply px-6 py-3 bg-hospital-danger hover:bg-hospital-danger-dark text-hospital-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200;
+}
+
+.btn-hospital-outline {
+  @apply px-6 py-3 bg-hospital-white border border-hospital-blue text-hospital-blue hover:bg-hospital-blue-light font-semibold rounded-xl transition-all duration-200;
+}
+
+.card-hospital {
+  @apply bg-hospital-white rounded-2xl shadow-lg border border-hospital-blue-light p-6;
+}
+
+/* Hospital Table Styles */
+.table-hospital {
+  @apply min-w-full divide-y divide-hospital-blue-light;
+}
+
+.table-hospital th {
+  @apply px-6 py-3 text-left text-xs font-semibold text-hospital-gray-dark uppercase tracking-wider bg-hospital-blue-light/30;
+}
+
+.table-hospital td {
+  @apply px-6 py-4 whitespace-nowrap;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.hover-lift-medical {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift-medical:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1);
+}
+
+.hover-lift-hospital {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift-hospital:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(30, 136, 229, 0.1);
+}
+
+/* Gradient Border */
+.gradient-border {
+  position: relative;
+  background: white;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--medical-primary), var(--medical-info));
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.gradient-border-hospital {
+  position: relative;
+  background: var(--hospital-white);
+}
+
+.gradient-border-hospital::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--hospital-blue), var(--hospital-green));
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* Service Items */
+.service-item {
+  transition: all 0.3s ease;
+}
+
+.service-item:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== FORM STYLES ===== */
+/* Medical Form Styles */
+.input-medical {
+  @apply w-full px-4 py-3 border border-medical-border rounded-xl focus:ring-2 focus:ring-medical-primary focus:border-transparent transition-all duration-200;
+}
+
+.select-medical {
+  @apply w-full px-4 py-3 border border-medical-border rounded-xl focus:ring-2 focus:ring-medical-primary focus:border-transparent transition-all duration-200 appearance-none bg-white;
+}
+
+/* Hospital Form Styles */
+.input-hospital {
+  @apply w-full px-4 py-3 border border-hospital-blue-light rounded-xl focus:ring-2 focus:ring-hospital-blue focus:border-transparent transition-all duration-200;
+}
+
+.select-hospital {
+  @apply w-full px-4 py-3 border border-hospital-blue-light rounded-xl focus:ring-2 focus:ring-hospital-blue focus:border-transparent transition-all duration-200 appearance-none bg-hospital-white;
+}
+
+.input-hospital-success {
+  @apply w-full px-4 py-3 border border-hospital-success rounded-xl focus:ring-2 focus:ring-hospital-success focus:border-transparent transition-all duration-200;
+}
+
+.input-hospital-warning {
+  @apply w-full px-4 py-3 border border-hospital-warning rounded-xl focus:ring-2 focus:ring-hospital-warning focus:border-transparent transition-all duration-200;
+}
+
+.input-hospital-danger {
+  @apply w-full px-4 py-3 border border-hospital-danger rounded-xl focus:ring-2 focus:ring-hospital-danger focus:border-transparent transition-all duration-200;
+}
+
+/* ===== STATUS BADGES ===== */
+/* Medical Status Badges */
+.badge-medical {
+  @apply px-3 py-1 bg-medical-light text-medical-dark text-sm font-medium rounded-full;
+}
+
+.badge-medical-success {
+  @apply px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full;
+}
+
+.badge-medical-warning {
+  @apply px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full;
+}
+
+.badge-medical-danger {
+  @apply px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full;
+}
+
+/* Hospital Status Badges */
+.badge-hospital {
+  @apply px-3 py-1 bg-hospital-blue-light text-hospital-blue text-sm font-medium rounded-full;
+}
+
+.badge-hospital-success {
+  @apply px-3 py-1 bg-hospital-success-light text-hospital-success text-sm font-medium rounded-full;
+}
+
+.badge-hospital-warning {
+  @apply px-3 py-1 bg-hospital-warning-light text-hospital-warning text-sm font-medium rounded-full;
+}
+
+.badge-hospital-danger {
+  @apply px-3 py-1 bg-hospital-danger-light text-hospital-danger text-sm font-medium rounded-full;
+}
+
+/* ===== ICON COLORS ===== */
+/* Medical Icon Colors */
+.icon-medical { @apply text-medical-primary; }
+.icon-medical-success { @apply text-green-600; }
+.icon-medical-warning { @apply text-yellow-600; }
+.icon-medical-danger { @apply text-red-600; }
+
+/* Hospital Icon Colors */
+.icon-hospital { @apply text-hospital-blue; }
+.icon-hospital-success { @apply text-hospital-success; }
+.icon-hospital-warning { @apply text-hospital-warning; }
+.icon-hospital-danger { @apply text-hospital-danger; }
+
+/* ===== SCROLLBARS ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--medical-primary), var(--medical-info));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, var(--medical-dark), #7c3aed);
+}
+
+/* Table scrollbar */
+.table-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Medical scrollbar */
+.medical-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.medical-scrollbar::-webkit-scrollbar-track {
+  background: var(--medical-light);
+}
+
+.medical-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--medical-primary);
+  border-radius: 3px;
+}
+
+.medical-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--medical-dark);
+}
+
+/* Hospital scrollbar */
+.hospital-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hospital-scrollbar::-webkit-scrollbar-track {
+  background: var(--hospital-blue-light);
+}
+
+.hospital-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--hospital-blue);
+  border-radius: 3px;
+}
+
+.hospital-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--hospital-blue-dark);
+}
+
+/* Hide scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ===== BACKDROP BLUR ===== */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ===== LOADING & PROGRESS ===== */
+/* Medical Loading Spinner */
+.spinner-medical {
+  border-color: var(--medical-primary) transparent transparent transparent;
+}
+
+/* Hospital Loading Spinner */
+.spinner-hospital {
+  border-color: var(--hospital-blue) transparent transparent transparent;
+}
+
+/* Medical Progress Bar */
+.progress-medical {
+  @apply bg-medical-light;
+}
+
+.progress-medical-fill {
+  @apply bg-medical-primary;
+  transition: width 0.3s ease;
+}
+
+/* Hospital Progress Bar */
+.progress-hospital {
+  @apply bg-hospital-blue-light;
+}
+
+.progress-hospital-fill {
+  @apply bg-hospital-blue;
+  transition: width 0.3s ease;
+}
+
+/* ===== NOTIFICATIONS ===== */
+/* Medical Notification Styles */
+.notification-medical {
+  @apply bg-medical-primary text-white shadow-lg;
+}
+
+.notification-medical-success {
+  @apply bg-green-500 text-white shadow-lg;
+}
+
+.notification-medical-warning {
+  @apply bg-yellow-500 text-white shadow-lg;
+}
+
+.notification-medical-danger {
+  @apply bg-red-500 text-white shadow-lg;
+}
+
+/* Hospital Notification Styles */
+.notification-hospital {
+  @apply bg-hospital-blue text-hospital-white shadow-lg;
+}
+
+.notification-hospital-success {
+  @apply bg-hospital-success text-hospital-white shadow-lg;
+}
+
+.notification-hospital-warning {
+  @apply bg-hospital-warning text-hospital-white shadow-lg;
+}
+
+.notification-hospital-danger {
+  @apply bg-hospital-danger text-hospital-white shadow-lg;
+}
+
+/* ===== EMERGENCY COLORS ===== */
+.emergency-red {
+  background-color: #ff4444;
+  color: white;
+}
+
+.emergency-red:hover {
+  background-color: #cc0000;
+}
+
+.emergency-red-light {
+  background-color: #ffeaea;
+  color: #cc0000;
+}
+
+/* Disabled State Colors */
+.hospital-disabled {
+  @apply bg-hospital-gray-light text-hospital-gray border-hospital-gray cursor-not-allowed;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .card-medical, .card-hospital {
+    @apply p-4;
+  }
+  
+  .btn-medical, .btn-hospital {
+    @apply px-4 py-2;
+  }
+  
+  .input-medical, .input-hospital {
+    @apply px-3 py-2;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  .card-medical, .card-hospital {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+  }
 }

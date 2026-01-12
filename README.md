@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Hospital Management System
 
-## Getting Started
+A comprehensive hospital management system built with Next.js, featuring separate interfaces for doctors, medical staff, and administrators.
 
-First, run the development server:
+## Features
+
+- **Doctor Portal**: Patient management, prescription creation
+- **Medical Staff Portal**: Prescription fulfillment, inventory management
+- **Admin Dashboard**: System statistics and overview
+- **Secure Authentication**: JWT-based authentication with role-based access
+
+## Setup
+
+### Environment Variables
+
+1. Copy the example environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Update `.env.local` with your actual values:
+   ```env
+   # Database
+   MONGODB_URI=mongodb://localhost:27017/hospital_management
+
+   # Authentication
+   JWT_SECRET=your_super_secret_jwt_key_here_change_in_production
+
+   # Next.js
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret_here
+   ```
+
+### Installation
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### Database Setup
+
+Make sure MongoDB is running locally, or update `MONGODB_URI` to point to your MongoDB instance.
+
+### Development
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## API Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Authentication
+- `POST /api/auth/doctor/signup` - Doctor registration
+- `POST /api/auth/doctor/signin` - Doctor login
+- `POST /api/auth/medical/signup` - Medical staff registration
+- `POST /api/auth/medical/signin` - Medical staff login
+- `POST /api/auth/logout` - Logout
 
-## Learn More
+### Doctor Routes (Authenticated as DOCTOR)
+- `POST /api/doctor/patients/create` - Create patient
+- `GET /api/doctor/patients/list` - List doctor's patients
+- `GET/PUT/DELETE /api/doctor/patients/[id]` - Patient CRUD
+- `POST /api/doctor/prescriptions/create` - Create prescription
+- `GET /api/doctor/prescriptions/list` - List prescriptions
 
-To learn more about Next.js, take a look at the following resources:
+### Medical Routes (Authenticated as MEDICAL)
+- `GET /api/medical/prescriptions/fetch` - Get pending prescriptions
+- `POST /api/medical/prescriptions/fulfill` - Fulfill prescription
+- `POST /api/medical/inventory/add` - Add/update inventory
+- `GET /api/medical/inventory/list` - List inventory
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Common Routes (Any authenticated user)
+- `GET /api/common/medicines` - List medicines
+- `GET /api/common/patients` - List all patients
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Admin Routes
+- `GET /api/admin/stats` - System statistics
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── (auth)/           # Authentication pages
+│   │   ├── api/              # API routes
+│   │   ├── dashboard/        # Admin dashboard
+│   │   ├── doctor/           # Doctor interface
+│   │   ├── medical/          # Medical staff interface
+│   │   ├── page.js           # Home page
+│   │   └── layout.js         # Root layout
+│   ├── lib/
+│   │   ├── mongodb.js        # Database connection
+│   │   └── auth.js           # Authentication utilities
+│   └── models/               # Mongoose models
+├── .env.example              # Environment variables template
+└── .env.local               # Local environment variables (gitignored)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Security
+
+- Environment variables are properly configured and gitignored
+- JWT tokens are used for authentication
+- Passwords are hashed with bcrypt
+- Role-based access control implemented
+- Sensitive data is never exposed to the client
+
+## Development Notes
+
+- The application includes graceful error handling and can run without a database connection
+- All routes include proper authentication checks
+- The UI uses minimal styling for clarity and functionality
