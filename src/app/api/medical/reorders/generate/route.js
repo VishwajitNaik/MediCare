@@ -10,10 +10,9 @@ export async function POST() {
     await connectDB();
     const user = await requireAuth('MEDICAL');
 
-    // Get all inventory items for this medical store
+    // Get all inventory items for this medical store (include all items for reorder analysis)
     const inventories = await Inventory.find({
-      medicalId: user.id,
-      autoReorderEnabled: true
+      medicalId: user.id
     }).populate('medicineId supplierId');
 
     let processedCount = 0;
@@ -63,12 +62,17 @@ export async function POST() {
           ? Math.round((inventory.availableStock / avgDailyConsumption) * 100) / 100
           : 999; // If no consumption, don't reorder
 
-        // Check if reorder is needed
+        // Check if reorder is needed (be more aggressive for testing)
+        const reorderLevel = inventory.reorderLevel || 10; // Default to 10 if not set
         const needsReorder =
-          inventory.availableStock <= inventory.reorderLevel ||
-          daysLeft <= 3;
+          inventory.availableStock <= reorderLevel ||
+          daysLeft <= 7 || // More lenient: reorder if less than 7 days left
+          inventory.availableStock <= 5 || // Always reorder if stock is critically low
+          inventory.availableStock <= reorderLevel * 1.5; // Reorder if getting close to limit
 
         if (needsReorder) {
+          console.log(`Reorder needed for ${inventory.medicineId?.name}: stock=${inventory.availableStock}, reorderLevel=${inventory.reorderLevel}, supplierId=${inventory.supplierId}`);
+
           // Calculate suggested quantity (10 days worth minus current stock)
           const targetStock = Math.max(avgDailyConsumption * 10, inventory.reorderLevel * 2);
           const suggestedQuantity = Math.max(1, Math.round(targetStock - inventory.availableStock));
@@ -79,6 +83,13 @@ export async function POST() {
             reason = 'FAST_MOVING';
           }
 
+          // Check supplier availability
+          const supplierId = inventory.preferredSupplierId || inventory.supplierId;
+          if (!supplierId) {
+            console.log(`Skipping ${inventory.medicineId?.name}: no supplier assigned`);
+            continue; // Skip items without suppliers
+          }
+
           // Check if reorder draft already exists for this medicine (any status)
           const existingDraft = await ReorderDraft.findOne({
             medicalId: user.id,
@@ -86,19 +97,25 @@ export async function POST() {
           });
 
           if (!existingDraft) {
-            // Create new reorder draft only if none exists
-            await ReorderDraft.create({
-              medicalId: user.id,
-              medicineId: inventory.medicineId._id,
-              supplierId: inventory.preferredSupplierId || inventory.supplierId,
-              suggestedQuantity,
-              reason,
-              daysLeft,
-              avgDailyConsumption,
-              currentStock: inventory.availableStock,
-            });
-            reorderCreatedCount++;
+            try {
+              // Create new reorder draft only if none exists
+              await ReorderDraft.create({
+                medicalId: user.id,
+                medicineId: inventory.medicineId._id,
+                supplierId: supplierId,
+                suggestedQuantity,
+                reason,
+                daysLeft,
+                avgDailyConsumption,
+                currentStock: inventory.availableStock,
+              });
+              reorderCreatedCount++;
+              console.log(`Created reorder draft for ${inventory.medicineId?.name}`);
+            } catch (createError) {
+              console.error(`Failed to create reorder draft for ${inventory.medicineId?.name}:`, createError.message);
+            }
           } else {
+            console.log(`Reorder draft already exists for ${inventory.medicineId?.name} (status: ${existingDraft.status})`);
             // Update existing draft with latest data if it's still relevant
             if (existingDraft.status === 'PENDING' && needsReorder) {
               existingDraft.suggestedQuantity = suggestedQuantity;
@@ -106,7 +123,7 @@ export async function POST() {
               existingDraft.daysLeft = daysLeft;
               existingDraft.avgDailyConsumption = avgDailyConsumption;
               existingDraft.currentStock = inventory.availableStock;
-              existingDraft.supplierId = inventory.preferredSupplierId || inventory.supplierId;
+              existingDraft.supplierId = supplierId;
               await existingDraft.save();
             }
           }

@@ -69,13 +69,22 @@ export default function Suppliers() {
 
   // Filter and search suppliers
   const filteredSuppliers = suppliers.filter(supplier => {
-    const matchesSearch = searchTerm === '' || 
-      supplier.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      supplier.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      supplier.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      supplier.mobile?.includes(searchTerm);
+    // Debug: Check if supplier has the expected fields
+    if (!supplier || typeof supplier !== 'object') {
+      console.warn('Invalid supplier object:', supplier);
+      return false;
+    }
 
-    const matchesFilter = 
+    // Ensure search term is trimmed and converted to lowercase
+    const search = searchTerm.trim().toLowerCase();
+
+    const matchesSearch = search === '' ||
+      (supplier.name && supplier.name.toLowerCase().includes(search)) ||
+      (supplier.companyName && supplier.companyName.toLowerCase().includes(search)) ||
+      (supplier.email && supplier.email.toLowerCase().includes(search)) ||
+      (supplier.mobile && supplier.mobile.includes(search));
+
+    const matchesFilter =
       filter === 'all' ||
       (filter === 'active' && supplier.isActive !== false) ||
       (filter === 'inactive' && supplier.isActive === false);

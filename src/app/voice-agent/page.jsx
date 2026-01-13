@@ -79,6 +79,9 @@ import {
   formatQueueStatus
 } from "../../utils/patientNLP";
 
+// Import the Multiple Purchase Panel component
+import MultiplePurchasePanel from "../Components/MultiplePurchasePanel";
+
 export default function VoiceAgent() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true); // TTS toggle state
@@ -391,6 +394,9 @@ export default function VoiceAgent() {
     if (text.toLowerCase().includes('purchase medicine stock') || text.toLowerCase().includes('purchase stock')) {
       return { intent: 'PURCHASE_STOCK', command: 'Purchase medicine stock' };
     }
+    if (text.toLowerCase().includes('purchase multiple medicines') || text.toLowerCase().includes('bulk purchase')) {
+      return { intent: 'MULTIPLE_PURCHASE', command: 'Multiple medicine purchase' };
+    }
 
     return null; // No intent detected
   };
@@ -578,6 +584,12 @@ export default function VoiceAgent() {
   //     quantity: number,
   //     purchasePrice: number
   //   }
+  // }
+
+  // Multiple purchase form panel state
+  const [multiplePurchasePanelData, setMultiplePurchasePanelData] = useState(null);
+  // {
+  //   show: boolean
   // }
 
   // PurchaseFormPanel Component
@@ -3551,6 +3563,46 @@ export default function VoiceAgent() {
   //   availability: [{ day: 1, startTime: '09:00', endTime: '17:00', isAvailable: true }, ...]
   // }
 
+  // Function to generate CSV by type directly
+  const generateCsvByType = async (type) => {
+    try {
+      if (type === 'expiry') {
+        const expiryData = await getExpiryListAPI();
+        const csvData = generateCSV(expiryData, 'expiry');
+        const fileName = "expiry_report.csv";
+
+        // Create a blob and download link
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        addToChat(`✅ Expiry report CSV generated and downloaded: ${fileName}`, false);
+      } else if (type === 'low_stock') {
+        const inventory = await getLowStockListAPI();
+        const csvData = generateCSV(inventory, 'low_stock');
+        const fileName = "low_stock_report.csv";
+
+        // Create a blob and download link
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        addToChat(`✅ Low stock report CSV generated and downloaded: ${fileName}`, false);
+      }
+    } catch (error) {
+      console.error('CSV generation error:', error);
+      addToChat(`❌ Error generating CSV report: ${error.message}`, false);
+    }
+  };
+
   // Patient creation panel state
   const [patientCreationData, setPatientCreationData] = useState(null);
 
@@ -4538,22 +4590,11 @@ export default function VoiceAgent() {
         addToChat(lowStockMedicinesMessage, false);
         return; // Don't return text since we're using special message type
       } else if (isCreateCsvIntent(userMessage)) {
-        let csvData = "";
-        let fileName = "";
-
         if (userMessage.toLowerCase().includes("expiry")) {
           const expiryData = await getExpiryListAPI();
-          csvData = generateCSV(expiryData, 'expiry');
-          fileName = "expiry_report.csv";
-        } else if (userMessage.toLowerCase().includes("low stock") || userMessage.toLowerCase().includes("stock")) {
-          const inventory = await getLowStockListAPI();
-          csvData = generateCSV(inventory, 'low_stock');
-          fileName = "low_stock_report.csv";
-        } else {
-          response = "Please specify what type of CSV you want: 'create csv expiry' or 'create csv low stock'";
-        }
+          const csvData = generateCSV(expiryData, 'expiry');
+          const fileName = "expiry_report.csv";
 
-        if (csvData) {
           // Create a blob and download link
           const blob = new Blob([csvData], { type: 'text/csv' });
           const url = URL.createObjectURL(blob);
@@ -4564,6 +4605,47 @@ export default function VoiceAgent() {
           URL.revokeObjectURL(url);
 
           response = `✅ CSV report generated and downloaded: ${fileName}`;
+        } else if (userMessage.toLowerCase().includes("low stock") || userMessage.toLowerCase().includes("stock")) {
+          const inventory = await getLowStockListAPI();
+          const csvData = generateCSV(inventory, 'low_stock');
+          const fileName = "low_stock_report.csv";
+
+          // Create a blob and download link
+          const blob = new Blob([csvData], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(url);
+
+          response = `✅ CSV report generated and downloaded: ${fileName}`;
+        } else {
+          // Return special message object with CSV selection buttons
+          const csvSelectionMessage = {
+            type: 'csv_selection',
+            message: '📄 Choose CSV Report Type',
+            options: [
+              {
+                type: 'expiry',
+                title: 'Expiry Report',
+                description: 'Export medicines that have expired',
+                icon: '⏰',
+                color: '#dc3545',
+                bgColor: '#fff5f5'
+              },
+              {
+                type: 'low_stock',
+                title: 'Low Stock Report',
+                description: 'Export medicines running low on stock',
+                icon: '📉',
+                color: '#ffc107',
+                bgColor: '#fffbf0'
+              }
+            ]
+          };
+          addToChat(csvSelectionMessage, false);
+          return; // Don't return text since we're using special message type
         }
       } else if (isCheckMedicineIntent(userMessage)) {
         const medicineData = extractMedicineData(userMessage);
@@ -4686,6 +4768,13 @@ export default function VoiceAgent() {
             response = "Patient not found. Please check the name and mobile number.";
           }
         }
+      } else if (intent.intent === 'MULTIPLE_PURCHASE') {
+        // Track command usage
+        updateCommandMemory('MULTIPLE_PURCHASE', 'Multiple medicine purchase');
+
+        // Open multiple purchase panel
+        setMultiplePurchasePanelData({ show: true });
+        response = `🛒 Opening Multiple Medicine Purchase Panel...\n\n💡 You can now add multiple medicines to create a bulk purchase order.`;
       } else if (isPurchaseStockIntent(userMessage)) {
         // Track command usage
         updateCommandMemory('PURCHASE_STOCK', 'Purchase medicine stock');
@@ -6305,6 +6394,17 @@ export default function VoiceAgent() {
         />
       )}
 
+      {/* Multiple Purchase Panel */}
+      {multiplePurchasePanelData && (
+        <MultiplePurchasePanel
+          onSave={(purchase) => {
+            addToChat(`✅ Multiple purchase created successfully!\nInvoice: ${purchase.invoiceNumber}\nTotal: ₹${purchase.totalPurchaseAmount}\nItems: ${purchase.itemsCount}`, false);
+            setMultiplePurchasePanelData(null);
+          }}
+          onClose={() => setMultiplePurchasePanelData(null)}
+        />
+      )}
+
       {/* Supplier Management Panel */}
       {supplierManagementData && (
         <SupplierManagementPanel
@@ -7365,6 +7465,63 @@ export default function VoiceAgent() {
                   💡 Click "Purchase More Stock" to replenish inventory
                 </div>
               </div>
+            ) : msg.content && typeof msg.content === 'object' && msg.content.type === 'csv_selection' ? (
+              // Render CSV selection buttons
+              <div style={{
+                display: "inline-block",
+                padding: "15px",
+                borderRadius: "15px",
+                backgroundColor: "#e9ecef",
+                color: "black",
+                maxWidth: "90%"
+              }}>
+                <div style={{ marginBottom: "10px", fontWeight: "bold" }}>
+                  📄 {msg.content.message}
+                </div>
+
+                {/* CSV option buttons */}
+                <div style={{ marginTop: "15px", padding: "10px", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "15px" }}>
+                    {msg.content.options.map((option, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => generateCsvByType(option.type)}
+                        style={{
+                          padding: "20px",
+                          backgroundColor: option.bgColor,
+                          border: `2px solid ${option.color}`,
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          textAlign: "center",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = "scale(1.02)";
+                          e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = "scale(1)";
+                          e.target.style.boxShadow = "none";
+                        }}
+                      >
+                        <div style={{ fontSize: "36px", marginBottom: "10px" }}>
+                          {option.icon}
+                        </div>
+                        <div style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "8px", color: option.color }}>
+                          {option.title}
+                        </div>
+                        <div style={{ fontSize: "14px", color: "#666" }}>
+                          {option.description}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ marginTop: "10px", fontSize: "12px", color: "#666", textAlign: "center" }}>
+                  💡 Click any button above to generate the corresponding CSV report
+                </div>
+              </div>
             ) : msg.content && typeof msg.content === 'object' && msg.content.type === 'medicine_actions' ? (
               // Render medicine action buttons
               <div style={{
@@ -7514,8 +7671,8 @@ export default function VoiceAgent() {
                   </button>
                   <button
                     onClick={() => {
-                      setMessage('purchase medicine stock');
-                      setTimeout(() => handleSendMessage(), 100); // Trigger purchase panel
+                      setMessage('purchase multiple medicines');
+                      setTimeout(() => handleSendMessage(), 100); // Trigger multiple purchase panel
                     }}
                     style={{
                       padding: "8px 12px",

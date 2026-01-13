@@ -21,9 +21,38 @@ const supplierSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    altMobile: {
+      type: String,
+      trim: true,
+    },
     address: {
       type: String,
       required: true,
+    },
+    gstNumber: {
+      type: String,
+      trim: true,
+    },
+    drugLicense: {
+      type: String,
+      trim: true,
+    },
+    type: {
+      type: String,
+      enum: ['Pharmaceutical', 'Medical Equipment', 'General', 'Other'],
+      default: 'Pharmaceutical',
+    },
+    specialization: {
+      type: String,
+      trim: true,
+    },
+    notes: {
+      type: String,
+      trim: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

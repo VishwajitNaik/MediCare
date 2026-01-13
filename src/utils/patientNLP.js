@@ -1003,26 +1003,48 @@ export async function findSuppliersAPI(searchCriteria) {
     throw new Error("Failed to fetch suppliers");
   }
   const data = await res.json();
+
+  // Apply filtering if criteria provided
+  if (searchCriteria && Object.keys(searchCriteria).length > 0) {
+    return filterSuppliers(data.suppliers, searchCriteria);
+  }
+
   return data.suppliers;
 }
 
 export function filterSuppliers(suppliers, criteria) {
   return suppliers.filter(supplier => {
-    let matches = true;
-
-    if (criteria.name) {
-      matches = matches && supplier.name.toLowerCase().includes(criteria.name.toLowerCase());
+    // Ensure supplier is a valid object
+    if (!supplier || typeof supplier !== 'object') {
+      return false;
     }
 
-    if (criteria.mobileLast4) {
-      matches = matches && supplier.mobile.endsWith(criteria.mobileLast4);
+    // Trim and convert search terms to lowercase
+    const searchName = criteria.name ? criteria.name.trim().toLowerCase() : '';
+    const searchMobileLast4 = criteria.mobileLast4 ? criteria.mobileLast4.trim() : '';
+    const searchCompanyName = criteria.companyName ? criteria.companyName.trim().toLowerCase() : '';
+
+    // Check each search criterion - use OR logic (any match is good)
+    let hasMatch = false;
+
+    if (searchName && supplier.name) {
+      hasMatch = hasMatch || supplier.name.toLowerCase().includes(searchName);
     }
 
-    if (criteria.companyName) {
-      matches = matches && supplier.companyName.toLowerCase().includes(criteria.companyName.toLowerCase());
+    if (searchMobileLast4 && supplier.mobile) {
+      hasMatch = hasMatch || supplier.mobile.endsWith(searchMobileLast4);
     }
 
-    return matches;
+    if (searchCompanyName && supplier.companyName) {
+      hasMatch = hasMatch || supplier.companyName.toLowerCase().includes(searchCompanyName);
+    }
+
+    // If no specific criteria provided, include all suppliers
+    if (!searchName && !searchMobileLast4 && !searchCompanyName) {
+      hasMatch = true;
+    }
+
+    return hasMatch;
   });
 }
 
